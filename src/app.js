@@ -81,7 +81,15 @@ app.use("/api/agencies", agencyRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/messages", messageRoutes);
 
-// Health check
+// Root & Health check endpoints
+app.get("/", (req, res) => {
+  res.json({
+    success: true,
+    message: "PropertyHub API is active and running",
+    version: "1.0.0",
+  });
+});
+
 app.get("/api/health", (req, res) => {
   res.json({ success: true, message: "PropertyHub API is running" });
 });

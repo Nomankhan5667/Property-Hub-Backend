@@ -11,6 +11,10 @@ try {
 let mongodInstance = null;
 
 const connectDB = async () => {
+  if (mongoose.connection.readyState >= 1) {
+    return;
+  }
+
   const mongoUri =
     process.env.MONGODB_URI ||
     process.env.MONGO_URI ||
@@ -28,7 +32,7 @@ const connectDB = async () => {
       console.warn(`⚠️  Configured MongoDB connection failed: ${error.message}`);
     }
   } else {
-    console.warn("⚠️  No MONGO_URI provided in backend/.env");
+    console.warn("⚠️  No MONGO_URI provided in environment variables");
   }
 
   // In development mode, fallback to in-memory MongoDB if remote connection is unavailable
@@ -50,9 +54,12 @@ const connectDB = async () => {
   console.error("\n========================================================");
   console.error("❌ MONGODB CONNECTION FAILED");
   console.error("========================================================");
-  console.error("Please provide a valid MongoDB connection string in backend/.env");
+  console.error("Please provide a valid MongoDB connection string in environment variables");
   console.error("========================================================\n");
-  process.exit(1);
+
+  if (process.env.NODE_ENV !== "production") {
+    process.exit(1);
+  }
 };
 
 // Graceful cleanup on server shutdown
